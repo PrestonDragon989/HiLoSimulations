@@ -1,4 +1,6 @@
-﻿namespace HiLoSimulations.Programs
+﻿using HiLoSimulations.Config.Types;
+
+namespace HiLoSimulations.Programs
 {
     /// <summary>
     /// A sub section of program. Which one used is detailed by the config file. They each do different things,
@@ -19,6 +21,7 @@
         /// <summary>
         /// The program section's equivalent to 'Main'
         /// </summary>
+        /// <param name="profile">The data needed to run the type of program.</param>
         public abstract void RunProgram();
 
         /// <summary>

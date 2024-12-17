@@ -1,6 +1,7 @@
 ﻿using HiLoSimulations.HiLow;
 using HiLoSimulations.HiLow.Decks;
 using HiLoSimulations.Logics;
+using IniParser.Model;
 using System.Diagnostics;
 
 namespace HiLoSimulations.Programs
@@ -9,11 +10,11 @@ namespace HiLoSimulations.Programs
     /// The simulations program.
     /// This program is made to use a profile's information, and then run several threads to check the data for 
     /// </summary>
+    /// <seealso cref="ProgramSection"/>
+    /// <seealso cref="ThreadStarter"/>
     public class Simulations : ProgramSection
     {
         private const string _presentationName = "HiLo Data Simulations";
-
-        private ConfigManager _configManager;
 
         private readonly CancellationTokenSource _cts = new();
         private readonly Object _lockObject = new();
@@ -34,7 +35,6 @@ namespace HiLoSimulations.Programs
         public override void RunProgram()
         {
             PrintNotes();
-            GetInputs();
 
             Console.WriteLine($"----- Game Threads Starting -----");
 
@@ -63,21 +63,20 @@ namespace HiLoSimulations.Programs
             } while (_threadStarter.IsActiveThreads());
             _simulationsTimer.Stop();
 
+            Thread.Sleep(500);
             Console.WriteLine($"All Threads Complete - Total Program Time: {_simulationsTimer.Elapsed}");
 
             PrintExit();
         }
 
         /// <summary>
-        /// Gets the amount of threads and history backup amount.
+        /// Sets the amount of threads and history backup amount.
         /// </summary>
-        /// <seealso cref="Utils.GetParsedInt(string, string, bool, bool)"/>
-        private void GetInputs()
+        /// <seealso cref="SimulationsConfig"/>
+        public void SetInputs(int threads, int gamesBeforeBackup)
         {
-            Console.WriteLine($"----- Customization -----");
-            _amountOfThreads = Utils.GetParsedInt("Please enter the amount of threads (Recommended: 10): ", "Not an integer. Enter amount of threads: ");
-            _historyBackupAmount = Utils.GetParsedInt("Please enter the amount of games before data backup (Recommended: 10000): ", "Not an integer. Enter the amount of games before data backup: ");
-            
+            _amountOfThreads = threads;
+            _historyBackupAmount = gamesBeforeBackup;
         }
 
         /// <summary>
@@ -123,9 +122,6 @@ namespace HiLoSimulations.Programs
             Console.WriteLine($"Total Games Per Second: " + _threadStarter?.TotalBenchmarks.TotalGamesPerSecond().ToString());
             Console.WriteLine($"Overall Thread G/s Mean: {_threadStarter?.TotalBenchmarks.OverallMean}");
             Console.WriteLine($"Overall Thread G/s Standard Deviation: {_threadStarter?.TotalBenchmarks.OverallStandardDeviation}");
-            Console.WriteLine($"----- Program Ended -----");
-            Console.WriteLine("\nPress Any Button To Exit. . .");
-            Console.ReadKey();
         }
 
         /// <summary>

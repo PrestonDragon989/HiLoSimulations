@@ -30,6 +30,14 @@ namespace HiLoSimulations
         public readonly static int DefaultThreads = 1;
         public readonly static int DefaultGameBackupAmount = 1000;
 
+        // Names
+        public readonly static string SimulationsName = "Simulations";
+
+        public readonly static string ArrayDeckName = "ArrayDeck";
+        public readonly static string QueueDeckName = "QueueDeck";
+
+        public readonly static string PlaceholderLogicName = "PlaceholderLogic";
+
         /// <summary>
         /// Clears a certain amount of lines from the console.
         /// </summary>
@@ -91,6 +99,54 @@ namespace HiLoSimulations
                     Console.Write(tryAgainMessage);
                 }
             }
+        }
+
+        /// <summary>
+        /// Tries to get a program section by a string name.
+        /// </summary>
+        /// <param name="name">The name of the program section.</param>
+        /// <returns>Either a program section, or null.</returns>
+        public static ProgramSection? GetSectionFromName(string name)
+        {
+            if (name == Utils.SimulationsName)
+            {
+                return new Simulations();
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Gets a deck based on the name.
+        /// </summary>
+        /// <param name="name">Name of deck.</param>
+        /// <returns>Deck from name, or null.</returns>
+        public static Deck? GetDeckFromName(string name)
+        {
+            if (name == Utils.ArrayDeckName)
+            {
+                return new ArrayDeck();
+            } else if (name == Utils.QueueDeckName)
+            {
+                return new QueueDeck();
+            }
+
+            return null;
+        }
+    
+        /// <summary>
+        /// Gets a logic/strategy by the name.
+        /// </summary>
+        /// <param name="name">Name of logic.</param>
+        /// <returns>Logic by name, or null.</returns>
+        public static Logic? GetLogicFromName(string name)
+        {
+            if (name == Utils.PlaceholderLogicName)
+            {
+                return new PlaceholderLogic();
+            }
+
+            return null;
         }
     }
 }

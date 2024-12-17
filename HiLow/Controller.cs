@@ -34,7 +34,7 @@ namespace HiLoSimulations.HiLow
             _lockObject = lockObject;
             _cts = cts;
 
-            _controllerBenchmarks = new(_history.Length, _lockObject);
+            _controllerBenchmarks = new(_history.Length);
             _totalBenchmarks = totalBenchmarks;
         }
 
