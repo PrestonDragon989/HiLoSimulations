@@ -1,4 +1,6 @@
-﻿using HiLoSimulations.Programs;
+﻿using HiLoSimulations.Config;
+using HiLoSimulations.Config.Types;
+using HiLoSimulations.Programs;
 
 namespace HiLoSimulations
 {
@@ -10,31 +12,68 @@ namespace HiLoSimulations
         /// <summary>
         /// Main function. This is where the program starts.
         /// </summary>
-        /// <param name="args">The arguements passed in when the .exe is ran.</param>
-        static void Main(string[] args)
+        /// <remarks>You can add the 'string[] args' parameter back to receive arguments.</remarks>
+        static void Main()
         {
             Console.WriteLine($"----- Main Thread Starting -----");
+            Console.WriteLine("Any questions? Hers the wiki: https://github.com/PrestonDragon989/HiLoSimulations/wiki");
 
-            ProgramSection? programSection = ConfigManager.StartMode(Utils.ConfigFilePath);
+            // Getting Profiles from the config file
+            ConfigManager configManager = new(Utils.ConfigFilePath);
             
-            Console.WriteLine("Reading Config file. . .");
-            if (programSection == null)
-            {
-                Console.WriteLine("Config File start mode not found.");
-                Console.WriteLine("Plase fix your config file.");
-                Console.WriteLine("You can copy/paste a fresh config file from the README.md if you need to.");
-                Console.WriteLine("For more information, please refer to the README.md file.");
-            } else
-            {
-                Console.WriteLine($"Start program found: {programSection.PresentationName()}");
-                Console.WriteLine($"Running Found Program. . .");
-                Thread.Sleep(500);
-                Console.WriteLine($"Program Started!");
-                Console.WriteLine($"----- Main Program Running -----\n\n");
-                Thread.Sleep(500);
+            BaseConfig?[] profiles = configManager.CollectProfiles();
 
-                programSection.RunProgram();
+            // Printing out the profile options
+            Console.WriteLine($"Profiles found in the {Utils.ConfigFilePath} config file.");
+            for (int i = 0;  i < profiles.Length; i++)
+            {
+                BaseConfig? profile = profiles[i];
+                if (profile != null)
+                {
+                    Console.WriteLine($"\t{i}. {profile.Name}");
+                } else
+                {
+                    Console.WriteLine($"\t{i}. CONFIG PROFILE ERROR");
+                }
             }
+            
+            // Getting Selected Profile
+            BaseConfig? selectedProfile = null;
+            do
+            {
+                Console.Write("Please enter the number of the profile you want: ");
+                string enteredNumber = (Console.ReadLine() ?? "0").ToString().Replace(" ", "");
+                if (int.TryParse(enteredNumber, out int result))
+                {
+                    if (result >= 0 && result < profiles.Length)
+                    {
+                        if (profiles[result] == null)
+                        {
+                            Console.WriteLine("The profile selected is invalid. Please choose another, or close the program.");
+                        } else
+                        {
+                            selectedProfile = profiles[result];
+                        }
+                    } else
+                    {
+                        Console.Write("Number can't be out of range. ");
+                    }
+                } else
+                {
+                    Console.Write("Input was invalid. Put and integer. ");
+                }
+            } while (selectedProfile == null);
+
+            // Getting program, & Running the selected profile/program
+            Console.WriteLine($"\n----- Selected Profile: {selectedProfile.Name} -----");
+
+            ProgramSection programSection = selectedProfile.GetProgram();
+            programSection.RunProgram();
+
+            // Exiting
+            Console.WriteLine($"----- Program Ended -----");
+            Console.Write("Press any key to exit. . .");
+            Console.ReadKey();
         }
     }
 }
